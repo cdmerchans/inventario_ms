@@ -75,8 +75,8 @@ class BuscarProducto(APIView):
 
     def get(self, request, *args, **kwargs):
 
-            nombre_buscar = request.data['nombre'].capitalize()
-            producto_base = Producto.objects.filter(nombre = nombre_buscar).values('nombre', 'precio', 'descripcion', 'cantidad', 'categoria')
+            id_buscar = request.data['id_producto']
+            producto_base = Producto.objects.filter(id_producto = id_buscar).values()
 
             if not producto_base:
 
