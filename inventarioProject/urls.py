@@ -17,11 +17,11 @@ from django.contrib import admin
 from django.urls import path
 from inventarioApp.views import AgregarProducto, VerProductos, BuscarProducto, ActualizarCantidad
 from django.views.decorators.csrf import csrf_exempt
-
+from django.conf.urls import url 
 
 urlpatterns = [
-    path('producto/', csrf_exempt(AgregarProducto.as_view())),
+    path('producto', csrf_exempt(AgregarProducto.as_view())),
     path('carta/', csrf_exempt(VerProductos.as_view())),
-    path('buscar/', csrf_exempt(BuscarProducto.as_view())),
+    url(r'buscar/(?P<pk>[0-9]+)$', csrf_exempt(BuscarProducto.as_view())),
     path('cantidad/', csrf_exempt(ActualizarCantidad.as_view())),
 ]

@@ -32,51 +32,66 @@ class AgregarProducto(APIView):
             return Response({"mensaje": "Producto actualizado"}, status=status.HTTP_200_OK)
 
 
-    def delete(self, request, *args, **kwargs):
+    def delete(self, request):
 
-        nombre_eliminar= request.data['nombre'].capitalize()
-        producto_base = Producto.objects.filter(nombre = nombre_eliminar)
+        nombre = request.query_params.get('nombre', None)
 
-        if not producto_base:
+        if nombre is None:
 
-            return Response({"mensaje": "El producto no existe"},status=status.HTTP_404_NOT_FOUND)
+            return Response({"mensaje": "El nombre está vacio"},status=status.HTTP_404_NOT_FOUND)
+
+        else:   
+            
+            nombre = nombre.capitalize()
+            producto_base = Producto.objects.filter(nombre = nombre)
+
+            if not producto_base:
+
+                return Response({"mensaje": "El producto no existe"},status=status.HTTP_404_NOT_FOUND)
+
+            else:
+
+                producto_base.delete()
+
+                return Response({"mensaje": "El producto fue eliminado"}, status=status.HTTP_200_OK)
+
+    def get(self, request):
+
+        nombre = request.query_params.get('nombre', None)
+        
+        if nombre is None:
+
+            return Response({"mensaje": "El nombre está vacio"},status=status.HTTP_404_NOT_FOUND)
 
         else:
 
-            producto_base.delete()
+            nombre = nombre.capitalize()
+            producto_base = Producto.objects.filter(nombre = nombre).values()
+            
+            if not producto_base:
 
-            return Response({"mensaje": "El producto fue eliminado"}, status=status.HTTP_200_OK)
+                return Response({"mensaje": "El producto no existe"},status=status.HTTP_404_NOT_FOUND)
 
-    def get(self, request, *args, **kwargs):
+            else:
 
-        nombre_buscar = request.data['nombre'].capitalize()
-        producto_base = Producto.objects.filter(nombre = nombre_buscar).values()
+                producto_list = list(producto_base)
 
-        if not producto_base:
-
-            return Response({"mensaje": "El producto no existe"},status=status.HTTP_404_NOT_FOUND)
-
-        else:
-
-            producto_list = list(producto_base)
-
-            return JsonResponse(producto_list, safe=False, status=status.HTTP_200_OK)
+                return JsonResponse(producto_list, safe=False, status=status.HTTP_200_OK)
 
 class VerProductos(APIView):
 
     def get(self, request, *args, **kwargs):
 
-        productos = Producto.objects.all().values('nombre', 'precio', 'descripcion', 'cantidad', 'categoria')
+        productos = Producto.objects.all().values()
         productos_list = list(productos)
 
         return JsonResponse(productos_list, safe=False, status=status.HTTP_200_OK)
 
 class BuscarProducto(APIView):
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request, pk):
 
-            id_buscar = request.data['id_producto']
-            producto_base = Producto.objects.filter(id_producto = id_buscar).values()
+            producto_base = Producto.objects.filter(id_producto = pk).values()
 
             if not producto_base:
 
@@ -90,7 +105,7 @@ class BuscarProducto(APIView):
 
 class ActualizarCantidad(APIView):
 
-    def post(self, request, *args, **kwargs):
+    def put(self, request, *args, **kwargs):
 
         nombre = request.data['nombre'].capitalize()
         cantidad = request.data['cantidad']
