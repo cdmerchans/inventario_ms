@@ -15,19 +15,20 @@ class AgregarProducto(APIView):
         descripcion = request.data['descripcion']
         cantidad = request.data['cantidad']
         categoria = request.data['categoria']
+        imagen = request.data["imagen"]
 
         producto = Producto.objects.filter(nombre = nombre).values('id_producto')
 
         if not producto:
 
-            new_product = Producto(nombre = nombre, precio = precio, descripcion =  descripcion, cantidad = cantidad, categoria = categoria)
+            new_product = Producto(nombre = nombre, precio = precio, descripcion =  descripcion, cantidad = cantidad, categoria = categoria, imagen = imagen)
             new_product.save()
 
             return Response({"mensaje": "Producto agregado"}, status=status.HTTP_201_CREATED)
 
         else:
 
-            Producto.objects.filter(nombre = nombre).update(precio = precio, descripcion =  descripcion, cantidad = cantidad, categoria = categoria)
+            Producto.objects.filter(nombre = nombre).update(precio = precio, descripcion =  descripcion, cantidad = cantidad, categoria = categoria, imagen = imagen)
         
             return Response({"mensaje": "Producto actualizado"}, status=status.HTTP_200_OK)
 
@@ -107,10 +108,10 @@ class ActualizarCantidad(APIView):
 
     def put(self, request, *args, **kwargs):
 
-        nombre = request.data['nombre'].capitalize()
+        id_producto = request.data['id_producto']
         cantidad = request.data['cantidad']
         
-        cantidad_base = Producto.objects.filter(nombre = nombre).values('cantidad')
+        cantidad_base = Producto.objects.filter(id_producto = id_producto).values('cantidad')
 
         if not cantidad_base:
 
@@ -128,6 +129,6 @@ class ActualizarCantidad(APIView):
             else:
 
                 cantidad_nueva = int(cantidad_base)+int(cantidad)
-                Producto.objects.filter(nombre = nombre).update(cantidad = cantidad_nueva)
+                Producto.objects.filter(id_producto = id_producto).update(cantidad = cantidad_nueva)
 
                 return Response({"mensaje": "Producto actualizado"}, status=status.HTTP_200_OK)

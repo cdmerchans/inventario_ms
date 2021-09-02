@@ -8,3 +8,4 @@ class Producto(models.Model):
     descripcion = models.CharField('Descripción', max_length = 200)
     cantidad = models.IntegerField('Cantidad')
     categoria = models.CharField('Categoría', max_length = 50)
+    imagen = models.URLField('Imagen',max_length = 200)
